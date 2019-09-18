@@ -91,23 +91,6 @@ public class Mesh
     }
 
 
-    public void render()
-    {
-        //Bind to the VAO
-        glBindVertexArray(getVaoID());
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        //Draw triangles
-        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
-
-        //Restore state
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glBindVertexArray(0);
-
-    }
-
 
     /**
      * Getter for vaoID

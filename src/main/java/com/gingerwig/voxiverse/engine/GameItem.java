@@ -13,6 +13,7 @@ public class GameItem
 
     private final Vector3f rotation;
 
+
     public GameItem(Mesh mesh)
     {
         this.mesh = mesh;

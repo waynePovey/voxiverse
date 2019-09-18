@@ -6,7 +6,7 @@ import com.gingerwig.voxiverse.engine.Renderer;
 import com.gingerwig.voxiverse.engine.Window;
 import com.gingerwig.voxiverse.models.Mesh;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
+import static org.lwjgl.glfw.GLFW.*;
 
 
 public class Game implements GameInterface
@@ -17,7 +17,14 @@ public class Game implements GameInterface
 
     private Mesh mesh;
 
-    private float rotY = 0;
+    private GameItem gameItem1;
+    private GameItem gameItem2;
+    private GameItem gameItem3;
+
+    private float translateX = 2f;
+    private float translateY = 0;
+
+    private float scale = 1;
 
 
 
@@ -47,15 +54,35 @@ public class Game implements GameInterface
 
         float[] vertices = new float[]
                 {
-                        -0.5f, 0.5f, -2f,
-                        -0.5f, -0.5f, -2f,
-                        0.5f, -0.5f, -2f,
-                        0.5f, 0.5f, -2f
+                        -0.5f, 0.5f, 0.5f,
+                        -0.5f, -0.5f, 0.5f,
+                        0.5f, -0.5f, 0.5f,
+                        0.5f, 0.5f, 0.5f,
+                        -0.5f, 0.5f, -0.5f,
+                        0.5f, 0.5f, -0.5f,
+                        -0.5f, -0.5f, -0.5f,
+                        0.5f, -0.5f, -0.5f
                 };
 
         int[] indices = new int[]
                 {
-                        0, 1, 3, 3, 1, 2
+                        //Front
+                        0, 1, 3, 3, 1, 2,
+
+                        //Top
+                        4, 0, 5, 5, 0, 3,
+
+                        //Right
+                        3, 2, 5, 5, 2, 7,
+
+                        //Left
+                        4, 6, 0, 0, 6, 1,
+
+                        //Bottom
+                        1, 6, 2, 2, 6, 7,
+
+                        //Back
+                        6, 4, 7, 7, 4, 5
                 };
 
 
@@ -64,36 +91,70 @@ public class Game implements GameInterface
                         1.0f, 0.0f, 0.0f,
                         0.0f, 1.0f, 0.0f,
                         0.0f, 0.0f, 1.0f,
+                        0.5f, 0.5f, 0.0f,
+                        1.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f,
+                        0.0f, 0.0f, 1.0f,
                         0.5f, 0.5f, 0.0f
                 };
 
         mesh = new Mesh(vertices, indices, colours);
 
-        GameItem gameItem1 = new GameItem(mesh);
-        GameItem gameItem2 = new GameItem(mesh);
-        GameItem gameItem3 = new GameItem(mesh);
+        gameItem1 = new GameItem(mesh);
+        gameItem2 = new GameItem(mesh);
+        gameItem3 = new GameItem(mesh);
+
+
+        gameItem1.setPosition(0, 0, -4);
+        gameItem2.setPosition(translateX,0 , -4);
+        gameItem3.setPosition(-2f,0 , -4);
+
 
         gameItems[0] = gameItem1;
         gameItems[1] = gameItem2;
         gameItems[2] = gameItem3;
-
-        gameItems[0].setPosition(0,rotY , 0);
-        gameItems[0].setRotation(rotY, rotY, rotY);
-
-        gameItems[1].setPosition(0.5f,-0.5f , 0);
-        gameItems[1].setRotation(0, rotY, 0);
-
-        gameItems[2].setPosition(-0.5f,-0.5f , 0);
-        gameItems[2].setRotation(0, rotY, 0);
     }
 
 
     @Override
     public void input(Window window)
     {
+        if(window.isKeyPressed(GLFW_KEY_RIGHT))
+        {
+            translateX += 0.01f;
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_LEFT))
+        {
+            translateX -= 0.01f;
+        }
+
+
         if(window.isKeyPressed(GLFW_KEY_UP))
         {
-            rotY += 1;
+            translateY += 0.01f;
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_DOWN))
+        {
+            translateY -= 0.01f;
+        }
+
+
+        if(window.isKeyPressed(GLFW_KEY_EQUAL))
+        {
+            if(scale < 1.5f)
+            {
+                scale += 0.01f;
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_MINUS))
+        {
+            if(scale > 0.25f)
+            {
+                scale -= 0.01f;
+            }
         }
     }
 
@@ -101,7 +162,18 @@ public class Game implements GameInterface
     @Override
     public void update(float interval)
     {
+        float rotation = gameItem1.getRotation().x + 1.5f;
 
+        if(rotation > 360)
+        {
+            rotation = 0;
+        }
+
+        gameItem1.setRotation(rotation, rotation, rotation);
+
+        gameItem2.setPosition(translateX, translateY, -4f);
+
+        gameItem3.setScale(scale);
     }
 
 

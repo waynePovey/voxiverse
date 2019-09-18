@@ -8,7 +8,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class Renderer
 {
-    private static final float FOV = (float) Math.toRadians(60.0f);
+    private static final float FOV = (float) Math.toRadians(45.0f);
 
     private static final float Z_NEAR = 0.01f;
 

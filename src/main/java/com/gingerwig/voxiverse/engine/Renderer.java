@@ -18,6 +18,13 @@ public class Renderer
 
     private Matrix4f projectionMatrix;
 
+    private Transformation transformation;
+
+
+    public Renderer()
+    {
+        this.transformation = new Transformation();
+    }
 
 
     /**
@@ -40,6 +47,7 @@ public class Renderer
         float aspectRatio = (float) window.getWidth() / window.getHeight();
         projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
         shader.createUniform("projectionMatrix");
+        shader.createUniform("worldMatrix");
     }
 
 
@@ -50,9 +58,9 @@ public class Renderer
      * uninstall the shader program.
      *
      * @param window    the window object
-     * @param mesh      the mesh to be rendered
+     * @param gameItems Contains an array of game item objects
      */
-    public void render(Window window, Mesh mesh)
+    public void render(Window window, GameItem[] gameItems)
     {
         clear();
 
@@ -64,19 +72,22 @@ public class Renderer
 
         shader.bind();
 
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth()
+                            , window.getHeight(), Z_NEAR, Z_FAR);
         shader.setUniform("projectionMatrix", projectionMatrix);
 
-        //Bind to the VAO
-        glBindVertexArray(mesh.getVaoID());
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
 
-        //Draw triangles
-        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+        for(GameItem gameItem : gameItems)
+        {
+            Matrix4f worldMatrix = transformation.getWorldMatrix(
+                    gameItem.getPosition(),
+                    gameItem.getRotation(),
+                    gameItem.getScale());
 
-        //Restore state
-        glDisableVertexAttribArray(0);
-        glBindVertexArray(0);
+            shader.setUniform("worldMatrix", worldMatrix);
+
+            gameItem.getMesh().render();
+        }
 
         shader.unbind();
     }
